@@ -1,0 +1,44 @@
+{% extends 'admin_base.html' %}
+
+{% block page_content %}
+<div class="add-subject-page">
+    <div class="add-subject-content">
+        <h2>Add New Subject</h2>
+
+        {% if error %}
+            <div class="alert alert-danger">
+                <strong>Error:</strong> {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="name" style="padding-bottom: 5px;">Subject Name</label> <!-- Reduced padding-bottom -->
+                <input type="text" id="name" name="name" class="form-control" required style="margin-bottom: 10px;"> <!-- Reduced margin-bottom -->
+            </div>
+
+            <div class="form-group">
+                <label for="description" style="padding-bottom: 5px;">Subject Description</label> <!-- Reduced padding-bottom -->
+                <textarea id="description" name="description" class="form-control" required style="margin-bottom: 10px;"></textarea> <!-- Reduced margin-bottom -->
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Add Subject</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<!-- Display error messages if any -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul class="flashes">
+        {% for category, message in messages %}
+            <li class="flash {{ category }}">{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+{% endblock %}
+

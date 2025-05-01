@@ -1,0 +1,29 @@
+{% extends 'admin_base.html' %}
+
+{% block page_content %}
+<div class="edit-subject-page">
+    <div class="edit-subject-content">
+        <h2>Edit Subject</h2>
+
+        {% if error %}
+            <div class="alert alert-danger">
+                <strong>Error:</strong> {{ error }}
+            </div>
+        {% endif %}
+
+        <!-- Edit Subject Form -->
+        <form method="POST" class="edit-subject-form">
+            <div>
+                <label for="subject_name" style="font-size:20px;">Subject Name</label>
+                <input type="text" id="subject_name" name="subject_name" placeholder="Enter subject name" value="{{ subject[0] }}" required>
+            </div>
+            <div>
+                <label for="description" style="font-size:20px;">Description</label>
+                <textarea id="description" name="description" placeholder="Enter subject description" required>{{ subject[1] }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Subject</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

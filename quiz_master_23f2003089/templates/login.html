@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <h2 class="welcome-message" style = "margin-bottom: 30px;">Hey There! Welcome to Quiz Master!</h2>
+    
+    <div class="login-form">
+        <form method="POST" class="login-form-style">
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username">
+            
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password">
+            
+            <!-- Role Selection: Admin checkbox -->
+            <div class="checkbox-container">
+                <input type="checkbox" name="is_admin" id="is_admin">
+                <label for="is_admin">I am an Administrator</label>
+            </div>
+
+            <!-- Buttons side by side -->
+            <div class="button-container">
+                <button type="submit" name="action" value="login" class="btn btn-primary">Login</button>
+                <button type="submit" name="action" value="signup" class="btn btn-secondary">Sign Up</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Display error messages if any -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul class="flashes">
+        {% for category, message in messages %}
+            <li class="flash {{ category }}">{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+{% endblock %}

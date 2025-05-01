@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="admin-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <ul>
+            <li><a href="/student" class="{% if request.path == '/student' %}active{% endif %}">Quizzes to Attempt</a></li>
+            <li><a href="/finished_quizzes" class="{% if request.path == '/finished_quizzes' %}active{% endif %}">Finished Quizzes</a></li>
+            <li><a href="/profile" class="{% if request.path == '/profile' %}active{% endif %}">Profile Details</a></li>
+
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header Bar -->
+        <div class="admin-header">
+            <div class="header-content">
+                <h3 class="welcome-admin">Welcome !</h3>
+                <form action="#" method="GET" class="search-form">
+                    <input type="text" name="search" class="search-bar" placeholder="Search here, press go again to display all...">
+                    <button type="submit" class="go-btn">Go</button>
+                </form>
+            </div>
+            <div class="logout-btn">
+                <a href="/logout" class="logout">
+                    <img src="{{ url_for('static', filename='images/lg2.svg') }}" alt="Logout" style="width:36px; height:36px;">
+                </a>
+            </div>
+        </div>
+
+        <!-- Page Content -->
+        {% block page_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

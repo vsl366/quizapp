@@ -1,0 +1,54 @@
+{% extends 'admin_base.html' %}
+
+{% block page_content %}
+<div class="manage-subjects-content">
+</div>
+
+<!-- Displaying subjects as cards -->
+<div class="subject-cards-container">
+    {% for subject in subjects %}
+        {% if loop.index0 % 4 == 0 %}
+            {% set subject_color = 'rgb(182, 26, 26)' %}
+        {% elif loop.index0 % 4 == 1 %}
+            {% set subject_color = 'rgb(239, 168, 25)' %}
+        {% elif loop.index0 % 4 == 2 %}
+            {% set subject_color = 'rgb(21, 185, 214)' %}
+        {% else %}
+            {% set subject_color = 'rgb(37, 175, 53)' %}
+        {% endif %}
+
+        <div class="subject-card">
+            <!-- Header with dynamic color -->
+            <div class="subject-card-header" 
+                 style="background-color: {{ subject_color }}; color: white;">
+                {{ subject[1] }}  <!-- Subject Name -->
+            </div>
+            
+            <!-- Card Body -->
+            <div class="subject-card-body">
+                <p class="subject-description" style="color: #555;">
+                    <strong>Description:</strong> {{ subject[2] }} <!-- Subject Description -->
+                </p>
+                <hr> <!-- Line between description and chapters -->
+                <p style="color: #555;">
+                    <strong>Chapters:</strong> {{ subject[3] }} <!-- Chapter Count -->
+                </p>
+            </div>
+            
+            <!-- Footer for Edit Button -->
+            <div class="subject-card-footer">
+                <a href="{{ url_for('manage_chapters', subject_id=subject[0]) }}" class="btn" style="text-decoration:none;">✏️ Edit</a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="floating-circle">
+    <a href="{{ url_for('add_subject') }}" style="color:white;text-decoration:none;">+</a>
+</div>
+
+{% endblock %}
+
+
+    
+

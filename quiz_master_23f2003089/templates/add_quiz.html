@@ -1,0 +1,61 @@
+{% extends 'admin_base.html' %}
+
+{% block page_content %}
+<div class="add-quiz-page">
+    <div class="add-quiz-content">
+        <h2>Add New Quiz</h2>
+
+        {% if error %}
+            <div class="alert alert-danger">
+                <strong>Error:</strong> {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="subject_id">Subject</label>
+                <select id="subject_id" name="subject_id" class="form-control"
+                        onchange="window.location.href='{{ url_for('add_quiz') }}?subject_id=' + this.value">
+                    <option value="">-- Select Subject --</option>
+                    {% for subject in subjects %}
+                        <option value="{{ subject[0] }}" 
+                                {% if subject[0] == selected_subject_id|int %}selected{% endif %}>
+                            {{ subject[1] }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="chapter_id">Chapter</label>
+                <select id="chapter_id" name="chapter_id" class="form-control" required>
+                    <option value="">-- Select Chapter --</option>
+                    {% for chapter in chapters %}
+                        <option value="{{ chapter[0] }}">{{ chapter[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="q_name">Quiz Name</label>
+                <textarea id="q_name" name="q_name" class="form-control" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Quiz Remarks</label>
+                <textarea id="description" name="description" class="form-control" required></textarea>
+            </div>
+
+            <!-- New Textbox for Quiz Date -->
+            <div class="form-group">
+                <label for="quiz_date">Quiz Date</label>
+                <input type="date" id="quiz_date" name="quiz_date" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Add Quiz</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

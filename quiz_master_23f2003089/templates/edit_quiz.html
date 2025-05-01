@@ -1,0 +1,29 @@
+{% extends 'admin_base.html' %}
+
+{% block page_content %}
+<div class="edit-quiz-page">
+    <div class="edit-quiz-content">
+        <h2>Edit Quiz</h2>
+
+        {% if error %}
+            <div class="alert alert-danger">
+                <strong>Error:</strong> {{ error }}
+            </div>
+        {% endif %}
+
+        <!-- Edit Quiz Form -->
+        <form method="POST" class="edit-quiz-form">
+            <div>
+                <label for="quiz_name" style="font-size:20px;">Quiz Name</label>
+                <input type="text" id="quiz_name" name="quiz_name" placeholder="Enter quiz name" value="{{ quiz[0] }}" required>
+            </div>
+            <div>
+                <label for="remark" style="font-size:20px;">Remark</label>
+                <textarea id="remark" name="remark" placeholder="Enter remarks" required>{{ quiz[1] }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Quiz</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

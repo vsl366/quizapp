@@ -1,0 +1,41 @@
+{% extends 'student_base.html' %}
+
+{% block page_content %}
+<h2 style="color: #333; text-align: center;">Completed Quizzes</h2>
+
+<div class="quiz-cards-container">
+    {% for quiz in completed_quizzes %}
+        {% if loop.index0 % 4 == 0 %}
+            {% set quiz_color = 'rgb(182, 26, 26)' %}
+        {% elif loop.index0 % 4 == 1 %}
+            {% set quiz_color = 'rgb(239, 168, 25)' %}
+        {% elif loop.index0 % 4 == 2 %}
+            {% set quiz_color = 'rgb(21, 185, 214)' %}
+        {% else %}
+            {% set quiz_color = 'rgb(37, 175, 53)' %}
+        {% endif %}
+
+        <div class="quiz-card">
+            <div class="quiz-card-header" style="background-color: {{ quiz_color }}; color: white;">
+                {{ quiz['quiz_name'] }}
+            </div>
+
+            <div class="quiz-card-body">
+                <p style="color: #555;">
+                    <strong>Subject:</strong> {{ quiz['subject_name'] }}
+                </p>
+                <p style="color: #555;">
+                    <strong>Your Score:</strong> {{ quiz['total_user_score'] }}
+                </p>
+            </div>
+
+            <div class="quiz-card-footer">
+                <a href="{{ url_for('view_right_answers', quiz_id=quiz['id']) }}" class="btn">Right Answers</a>
+                <a href="{{ url_for('reattempt_quiz', quiz_id=quiz['id']) }}" class="btn">Reattempt Quiz</a>
+            </div>
+        </div>
+    {% else %}
+        <p style="text-align: center;">You have not completed any quizzes yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}

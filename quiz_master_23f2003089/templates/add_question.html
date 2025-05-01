@@ -1,0 +1,45 @@
+{% extends 'admin_base.html' %}
+
+{% block page_content %}
+<div class="add-question-page">
+    <div class="add-question-content">
+        <h2>{{ 'Edit Question' if is_edit else 'Add New Question' }}</h2>
+
+        {% if error %}
+            <div class="alert alert-danger">
+                <strong>Error:</strong> {{ error }}
+            </div>
+        {% endif %}
+
+        <!-- Edit Question Form -->
+        <form method="POST" class="edit-question-form">
+            <div>
+                <label for="question_text" style="font-size:20px;">Question Text</label>
+                <textarea id="question_text" name="question_text" placeholder="Enter question text" required>{{ question.question_text if question else '' }}</textarea>
+            </div>
+            <div>
+                <label for="option_1" style="font-size:20px;">Option 1</label>
+                <input type="text" id="option_1" name="option_1" placeholder="Enter option 1" value="{{ question.option_1 if question else '' }}" required>
+            </div>
+            <div>
+                <label for="option_2" style="font-size:20px;">Option 2</label>
+                <input type="text" id="option_2" name="option_2" placeholder="Enter option 2" value="{{ question.option_2 if question else '' }}" required>
+            </div>
+            <div>
+                <label for="option_3" style="font-size:20px;">Option 3</label>
+                <input type="text" id="option_3" name="option_3" placeholder="Enter option 3" value="{{ question.option_3 if question else '' }}" required>
+            </div>
+            <div>
+                <label for="option_4" style="font-size:20px;">Option 4</label>
+                <input type="text" id="option_4" name="option_4" placeholder="Enter option 4" value="{{ question.option_4 if question else '' }}" required>
+            </div>
+            <div>
+                <label for="correct_option" style="font-size:20px;">Correct Option (1-4)</label>
+                <input type="number" id="correct_option" name="correct_option" min="1" max="4" placeholder="Enter correct option number" value="{{ question.correct_option if question else '' }}" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Question</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
