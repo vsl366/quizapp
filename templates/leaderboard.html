@@ -1,0 +1,430 @@
+{% extends 'admin_base.html' %}
+
+{% block page_content %}
+<!-- Inline CSS for demonstration; ideally move to your CSS file -->
+<style>
+  .leaderboard-container {
+    background: #111;
+    color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 1200px;
+    margin: 20px auto;
+  }
+  .leaderboard-container h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #2ecc71;
+  }
+  /* Section styling */
+  .lb-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    border-radius: 8px;
+  }
+  .lb-section:nth-child(even) {
+    background: rgba(255,255,255,0.05);
+  }
+  .lb-section:nth-child(odd) {
+    background: rgba(255,255,255,0.1);
+  }
+  /* KPI Cards */
+  .kpi-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 30px;
+  }
+  .kpi-card {
+    flex: 1;
+    min-width: 220px;
+    background: #222;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+  .kpi-card h3 {
+    margin-bottom: 10px;
+    color: #2ecc71;
+    font-size: 1.1em;
+    letter-spacing: 1px;
+  }
+  .kpi-card p {
+    font-size: 1.8em;
+    font-weight: bold;
+  }
+  /* Table Styling */
+  .data-table table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #333;
+    color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .data-table th, .data-table td {
+    padding: 12px 15px;
+    text-align: left;
+  }
+  .data-table th {
+    background: #2ecc71;
+    color: #111;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .data-table tr:nth-child(even) {
+    background: #444;
+  }
+  .data-table tr:hover {
+    background: #555;
+  }
+  .data-table h3 {
+    color: #2ecc71;
+    margin-bottom: 10px;
+  }
+  /* Chart Container */
+  .chart-container {
+    text-align: center;
+    margin: 30px 0;
+  }
+  .chart-container canvas {
+    max-width: 100%;
+  }
+</style>
+
+<div class="leaderboard-container">
+  <h2>Leaderboard </h2>
+
+  <!-- SECTION 1: KPI Cards -->
+  <section class="lb-section">
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <h3>Total Students</h3>
+        <p>{{ total_students }}</p>
+      </div>
+      <div class="kpi-card">
+        <h3>Overall Avg Score</h3>
+        <p>{{ overall_avg }} %</p>
+      </div>
+      <div class="kpi-card">
+        <h3>Highest Total Score</h3>
+        <p>{{ highest_total_score }}</p>
+      </div>
+      <div class="kpi-card">
+        <h3>Best Subject</h3>
+        <p>{{ best_subject }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: Subject-wise Cumulative Scores -->
+  <section class="lb-section">
+    <h3 style="color:#2ecc71;margin-bottom:10px;">Subject-wise Cumulative Scores</h3>
+    <div class="data-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Score / Max (Percentage)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in subject_cumulative %}
+          <tr>
+            <td>{{ row[0] }}</td>
+            <td>
+              {{ row[1] }} / {{ row[2] }}
+              {% if row[2] > 0 %}
+                ({{ (row[1] / row[2] * 100)|round(2) }}%)
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="chart-container">
+      <canvas id="subjectCumulativeChart" width="400" height="200"></canvas>
+    </div>
+  </section>
+
+  <!-- SECTION 3: Subject-wise Average Scores -->
+  <section class="lb-section">
+    <h3 style="color:#2ecc71;margin-bottom:15px">Subject-wise Average Scores</h3>
+    <div class="data-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Average Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in subject_average %}
+          <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1]|round(2) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <h3 style="color:#2ecc71;margin-top:30px;margin-bottom:15px">Subject-wise Attempts</h3>
+    <div class="chart-container">
+      <!-- This chart was previously used for subject average.
+           Now, you want to display subject attempts. We'll reuse this canvas. -->
+      <canvas id="subjectAverageChart" width="400" height="200"></canvas>
+    </div>
+  </section>
+
+  <!-- SECTION 4: User-wise Cumulative Scores -->
+  <section class="lb-section">
+    <h3 style="color:#2ecc71;">User-wise Cumulative Scores</h3>
+    <div class="data-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Score / Total Possible (Percentage)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in user_cumulative %}
+          <tr>
+            <td>{{ row[0] }}</td>
+            <td>
+              {{ row[1] }} / {{ row[2] }}
+              {% if row[2] > 0 %}
+                ({{ (row[1] / row[2] * 100)|round(2) }}%)
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="chart-container">
+      <canvas id="userCumulativeChart" width="400" height="200"></canvas>
+    </div>
+  </section>
+
+  <!-- SECTION 5: Top 5 Quizzes by Average Score -->
+  <section class="lb-section">
+    <h3 style="color:#2ecc71;">Top 5 Quizzes (by Avg Score)</h3>
+    <div class="data-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Quiz Name</th>
+            <th>Average Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for quiz in top_quizzes %}
+          <tr>
+            <td>{{ quiz[0] }}</td>
+            <td>{{ quiz[1]|round(2) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="chart-container">
+      <canvas id="topQuizChart" width="400" height="200"></canvas>
+    </div>
+  </section>
+
+  <!-- SECTION 6: Lowest 5 Quizzes by Average Score -->
+  <section class="lb-section">
+    <h3 style="color:#2ecc71;">Lowest 5 Quizzes (by Avg Score)</h3>
+    <div class="data-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Quiz Name</th>
+            <th>Average Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for quiz in lowest_quizzes %}
+          <tr>
+            <td>{{ quiz[0] }}</td>
+            <td>{{ quiz[1]|round(2) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="chart-container">
+      <canvas id="lowestQuizChart" width="400" height="200"></canvas>
+    </div>
+  </section>
+
+  <!-- SECTION 7: Pass/Fail Ratio -->
+  <section class="lb-section">
+    <h3 style="color:#2ecc71;">Pass/Fail Ratio (Score ≥ 50 percent is Pass)</h3>
+    <div class="data-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Pass Count</th>
+            <th>Fail Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ pass_count }}</td>
+            <td>{{ fail_count }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="chart-container">
+      <canvas id="passFailChart" width="400" height="200"></canvas>
+    </div>
+  </section>
+
+  <!-- SECTION 8: All Students Performance Table -->
+  <section class="lb-section">
+    <h3 style="color:#2ecc71;">All Students Performance</h3>
+    <div class="data-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Student</th>
+            <th>Total Score</th>
+            <th>Total Possible</th>
+            <th>Percentage (%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in all_students %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[2] }}</td>
+            <td>{{ row[3] }}</td>
+            <td>
+              {% if row[3] > 0 %}
+                {{ (row[2] / row[3] * 100)|round(2) }}%
+              {% else %}
+                N/A
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<!-- Include Chart.js from CDN (or local copy) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1) Subject-wise Cumulative Chart (Bar)
+    const subCumDataRaw = {{ subject_cumulative|tojson }};
+    const subCumLabels = subCumDataRaw.map(item => item[0]);
+    const subCumPercentages = subCumDataRaw.map(item => item[2] > 0 ? (parseFloat(item[1]) / parseFloat(item[2]) * 100) : 0);
+    new Chart(document.getElementById('subjectCumulativeChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: subCumLabels,
+        datasets: [{
+          label: 'Percentage Score (%)',
+          data: subCumPercentages,
+          backgroundColor: '#2ecc71'
+        }]
+      },
+      options: { scales: { y: { beginAtZero: true, max: 100 } } }
+    });
+
+    // 2) Subject Attempts Chart (Doughnut) - using subject_attempts instead of subject_average
+    const subAttemptsDataRaw = {{ subject_attempts|tojson }};
+    const subAttemptsLabels = subAttemptsDataRaw.map(item => item[0]);
+    const subAttemptsData = subAttemptsDataRaw.map(item => parseInt(item[1]));
+    new Chart(document.getElementById('subjectAverageChart').getContext('2d'), {
+      type: 'doughnut',
+      data: {
+        labels: subAttemptsLabels,
+        datasets: [{
+          label: 'Attempts',
+          data: subAttemptsData,
+          backgroundColor: ['#27ae60','#2980b9','#8e44ad','#f1c40f','#c0392b','#16a085','#7f8c8d']
+        }]
+      }
+    });
+
+    // 3) User-wise Cumulative Chart (Bar)
+    const userDataRaw = {{ user_cumulative|tojson }};
+    const userLabels = userDataRaw.map(item => item[0]);
+    const userPercentages = userDataRaw.map(item => item[2] > 0 ? (parseFloat(item[1]) / parseFloat(item[2]) * 100) : 0);
+    new Chart(document.getElementById('userCumulativeChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: userLabels,
+        datasets: [{
+          label: 'Percentage Score (%)',
+          data: userPercentages,
+          backgroundColor: '#9b59b6'
+        }]
+      },
+      options: { scales: { y: { beginAtZero: true, max: 100 } } }
+    });
+
+    // 4) Top 5 Quizzes Chart (Bar)
+    const topQuizDataRaw = {{ top_quizzes|tojson }};
+    const topQuizLabels = topQuizDataRaw.map(item => item[0]);
+    const topQuizData = topQuizDataRaw.map(item => parseFloat(item[1]));
+    new Chart(document.getElementById('topQuizChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: topQuizLabels,
+        datasets: [{
+          label: 'Avg Score',
+          data: topQuizData,
+          backgroundColor: '#e67e22'
+        }]
+      },
+      options: { scales: { y: { beginAtZero: true } } }
+    });
+
+    // 5) Lowest 5 Quizzes Chart (Bar)
+    const lowQuizDataRaw = {{ lowest_quizzes|tojson }};
+    const lowQuizLabels = lowQuizDataRaw.map(item => item[0]);
+    const lowQuizData = lowQuizDataRaw.map(item => parseFloat(item[1]));
+    new Chart(document.getElementById('lowestQuizChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: lowQuizLabels,
+        datasets: [{
+          label: 'Avg Score',
+          data: lowQuizData,
+          backgroundColor: '#c0392b'
+        }]
+      },
+      options: { scales: { y: { beginAtZero: true } } }
+    });
+
+    // 6) Pass/Fail Ratio Chart (Doughnut)
+    new Chart(document.getElementById('passFailChart').getContext('2d'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Pass', 'Fail'],
+        datasets: [{
+          data: [{{ pass_count }}, {{ fail_count }}],
+          backgroundColor: ['#2ecc71', '#e74c3c']
+        }]
+      }
+    });
+});
+</script>
+{% endblock %}

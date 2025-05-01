@@ -1,0 +1,54 @@
+{% extends 'admin_base.html' %}
+
+{% block page_content %}
+<div class="manage-questions-page">
+    <div class="quiz-header">
+        <h2>{{ quiz_name }}</h2>
+
+        <!-- Edit and Delete Quiz Buttons -->
+        <a href="{{ url_for('admin.edit_quiz', quiz_id=quiz_id) }}" class="btn btn-secondary">Edit Quiz</a>
+        <form method="POST" action="{{ url_for('admin.delete_quiz', quiz_id=quiz_id) }}" style="display: inline;">
+            <button type="submit" class="btn btn-danger">Delete Quiz</button>
+        </form>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Question</th>
+                <th>Option 1</th>
+                <th>Option 2</th>
+                <th>Option 3</th>
+                <th>Option 4</th>
+                <th>Correct Option no.</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for question in questions %}
+            <tr>
+                <td>{{ question[1] }}</td>
+                <td>{{ question[2] }}</td>
+                <td>{{ question[3] }}</td>
+                <td>{{ question[4] }}</td>
+                <td>{{ question[5] }}</td>
+                <td>{{ question[6] }}</td>
+                <td>
+                    <a href="{{ url_for('admin.edit_question', question_id=question[0]) }}" class="btn btn-secondary">Edit</a>
+                </td>
+                <td>
+                    <form method="POST" action="{{ url_for('admin.delete_question', question_id=question[0]) }}" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="floating-circle">
+        <a href="{{ url_for('admin.add_question', quiz_id=quiz_id) }}" style="text-decoration: none; color: white;">+</a>
+    </div>
+</div>
+{% endblock %}

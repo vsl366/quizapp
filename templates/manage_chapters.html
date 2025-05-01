@@ -1,0 +1,39 @@
+{% extends 'admin_base.html' %}
+
+{% block page_content %}
+<div class="manage-chapters-page">
+    <h2 style="text-align: center;">{{ subject_name }} </h2>
+    <a href="{{ url_for('admin.edit_subject', subject_id=subject_id) }}" class="btn btn-secondary">Edit Subject</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Chapter Name</th>
+                <th>Description</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for chapter in chapters %}
+            <tr>
+                <td>{{ chapter[1] }}</td>
+                <td>{{ chapter[2] }}</td>
+                <td style="vertical-align: middle;">
+                    <a href="{{ url_for('admin.edit_chapter', chapter_id=chapter[0]) }}" class="btn btn-secondary">✏️ Edit</a>
+                </td>
+                <td style="vertical-align: middle;">
+                    <form method="POST" action="{{ url_for('admin.delete_chapter', chapter_id=chapter[0]) }}" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">🗑️ Delete</button>
+                    </form>
+                </td>
+                
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="floating-circle">
+        <a href="{{ url_for('admin.add_chapter', subject_id=subject_id, chapter_id=chapter_id) }}" style="text-decoration:none;color:white;">+</a>
+    </div>
+</div>
+{% endblock %}

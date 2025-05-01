@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="admin-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <ul>
+            <li><a href="/admin" class="{% if request.path == '/admin' %}active{% endif %}">Manage Subjects</a></li>
+            <li><a href="/manage_quizzes" class="{% if request.path == '/manage_quizzes' %}active{% endif %}">Manage Quizzes</a></li>
+            <li><a href="/leaderboard" class="{% if request.path == '/leaderboard' %}active{% endif %}">LeaderBoard</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header Bar -->
+        <div class="admin-header">
+            <div class="header-content">
+                <h3 class="welcome-admin">Welcome, Admin!</h3>
+                <form action="#" method="GET" class="search-form">
+                    <input type="text" name="search" class="search-bar" placeholder="Search here, press go again to display all...">
+                    <button type="submit" class="go-btn">Go</button>
+                </form>
+            </div>
+            <div class="logout-btn">
+                <a href="/logout" class="logout">
+                    <img src="{{ url_for('static', filename='images/lg2.svg') }}" alt="Logout" style="width:36px; height:36px;">
+                </a>
+            </div>
+        </div>
+
+        <!-- Page Content -->
+        {% block page_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <!-- If you need extra admin-specific scripts, you can add them here. -->
+{% endblock %}

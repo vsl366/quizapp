@@ -1,0 +1,33 @@
+{% extends 'student_base.html' %}
+
+{% block page_content %}
+<div class="quiz-container">
+    <!-- Quiz Title & Timer -->
+    <div class="quiz-header">
+        <h2 class="quiz-title">{{ quiz['quiz_name'] }}</h2>
+        <div id="timer" class="quiz-timer"></div>
+    </div>
+
+    <form method="POST" id="quiz-form">
+        {% for question in questions %}
+            <div class="question-card">
+                <p class="question-text"><strong>{{ loop.index }}. {{ question['question_text'] }}</strong></p>
+                <div class="options">
+                    {% for i in range(1, 5) %}
+                        <label class="option-label">
+                            <input type="radio" name="q{{ question['id'] }}" value="{{ i }}">
+                            <span class="option-text">{{ question['option_' ~ i] }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn finish-btn">Finish Quiz</button>
+    </form>
+</div>
+
+<script>
+    var duration = {{ quiz['duration'] | int }} * 60;  // Ensure duration is an integer
+</script>
+<script src="{{ url_for('static', filename='js/timer.js') }}"></script>
+{% endblock %}
