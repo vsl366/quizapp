@@ -1,5 +1,4 @@
-This is a Simple Quizz app made using HTML, CSS and JINJA TEMPLATING, Run in Flask ( Railways ) 
+This is a Simple Quizz app made using HTML, CSS and JINJA TEMPLATING, Run in Flask 
 
-Check it out Below !!
 
-https://web-production-c3933.up.railway.app/
+When you clone this, in models/database.py, populate the users table with one admin user before you start
